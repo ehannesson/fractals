@@ -1,3 +1,6 @@
+use pyo3::prelude::*;
+
+
 fn evaluate_single_point(cx: f64, cy: f64, max_iter: u32) -> u32 {
     /// Compute Mandelbrot escape iteration count.
     /// 
@@ -71,4 +74,36 @@ fn render_frame(
         }
     }
     buffer
+}
+
+
+fn render_frame_py(
+    width: usize,
+    height: usize,
+    center_x: &str,
+    center_y: &str,
+    scale: &str,
+    max_iter: u32,
+) -> PyResult<Vec<u32>> {
+    let center_x = center_x.parse().unwrap();
+    let center_y = center_y.parse().unwrap();
+    let scale = scale.parse().unwrap();
+
+    Ok(
+        render_frame(
+            width,
+            height,
+            &center_x,
+            &center_y,
+            &scale,
+            max_iter,
+        )
+    )
+}
+
+
+#[pymodule]
+fn mandelbrot(_py: Python, module: &PyModule) -> PyResult<()> {
+    module.add_function(wrap_pyfunction!(render_frame_py, module)?)?;
+    Ok(())
 }
