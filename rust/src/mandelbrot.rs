@@ -28,22 +28,22 @@ fn evaluate_single_point(cx: f64, cy: f64, max_iter: u32) -> u32 {
 fn _render_frame(
     width: usize,
     height: usize,
-    center_x: f64,
-    center_y: f64,
+    x_center: f64,
+    y_center: f64,
     scale: f64,
     max_iter: u32,
 ) -> Vec<u32> {
     /// Render a full frame of Mandelbrot escape iterations.
     /// 
     /// The rendered frame is `width` pixels by `height` pixels. In the complex
-    /// plane, the frame is centered on `(center_x, center_y)`, and has a width
+    /// plane, the frame is centered on `(x_center, y_center)`, and has a width
     /// of `scale` units.
     /// 
     /// Parameters
     /// ----------
     /// width, height : usize
     ///     Frame width and height, respectively, in pixels.
-    /// center_x, center_y : f64
+    /// x_center, y_center : f64
     ///     Frame center in the complex plane.
     /// scale : f64
     ///     The width of the frame in the complex plane.
@@ -63,8 +63,8 @@ fn _render_frame(
     let mut buffer = vec![0u32; width*height]
 
     let pixel_step = scale / width as f64;
-    let x_start = center_x - (width as f64 / 2.0);
-    let y_start = center_y - (height as f64 / 2.0);
+    let x_start = x_center - (width as f64 / 2.0);
+    let y_start = y_center - (height as f64 / 2.0);
 
     for y_iter in 0..height {
         let cy = y_start + (pixel_step * y_iter);
@@ -81,21 +81,21 @@ fn _render_frame(
 fn render_frame(
     width: usize,
     height: usize,
-    center_x: &str,
-    center_y: &str,
+    x_center: &str,
+    y_center: &str,
     scale: &str,
     max_iter: u32,
 ) -> PyResult<Vec<u32>> {
-    let center_x = center_x.parse().unwrap();
-    let center_y = center_y.parse().unwrap();
+    let x_center = x_center.parse().unwrap();
+    let y_center = y_center.parse().unwrap();
     let scale = scale.parse().unwrap();
 
     Ok(
         _render_frame(
             width,
             height,
-            &center_x,
-            &center_y,
+            &x_center,
+            &y_center,
             &scale,
             max_iter,
         )
