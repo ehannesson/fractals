@@ -1,3 +1,6 @@
+# Data files
+zoom_data
+
 # Rust files
 rust/Cargo.lock
 rust/target
