@@ -6,8 +6,8 @@ fn evaluate_single_point(cx: f64, cy: f64, max_iter: u32) -> u32 {
     /// 
     /// Returns the number of iterations it takes for the point to escape, or
     /// `max_iter` if the point does not escape.
-    let mut x: f64 = 0;
-    let mut y: f64 = 0;
+    let mut x: f64 = 0.0;
+    let mut y: f64 = 0.0;
 
     for iter in 0..max_iter {
         // Perform one iteration
@@ -15,8 +15,8 @@ fn evaluate_single_point(cx: f64, cy: f64, max_iter: u32) -> u32 {
         let yn = 2.0*x*y + cy;
         // Check if we've escaped
         if xn*xn + yn*yn > 4.0 {
-            iter + 1
-        }
+            return iter + 1
+        };
         // Update variables if not escaped
         x = xn;
         y = yn;
@@ -60,16 +60,16 @@ fn _render_frame(
     ///     frame, the entries starting at `2*width` correspond to the second
     ///     row of the frame, and so on.
     
-    let mut buffer = vec![0u32; width*height]
+    let mut buffer = vec![0u32; width*height];
 
     let pixel_step = scale / width as f64;
     let x_start = x_center - (width as f64 / 2.0);
     let y_start = y_center - (height as f64 / 2.0);
 
     for y_iter in 0..height {
-        let cy = y_start + (pixel_step * y_iter);
+        let cy = y_start + (pixel_step * y_iter as f64);
         for x_iter in 0..width {
-            let cx = x_start + (pixel_step * x_iter);
+            let cx = x_start + (pixel_step * x_iter as f64);
             buffer[(y_iter * width) + x_iter] = evaluate_single_point(cx, cy, max_iter);
         }
     }
@@ -86,17 +86,13 @@ fn render_frame(
     scale: &str,
     max_iter: u32,
 ) -> PyResult<Vec<u32>> {
-    let x_center = x_center.parse().unwrap();
-    let y_center = y_center.parse().unwrap();
-    let scale = scale.parse().unwrap();
-
     Ok(
         _render_frame(
             width,
             height,
-            &x_center,
-            &y_center,
-            &scale,
+            x_center.parse().unwrap(),  // Convert all these to floats
+            y_center.parse().unwrap(),
+            scale.parse().unwrap(),
             max_iter,
         )
     )
@@ -104,7 +100,7 @@ fn render_frame(
 
 
 #[pymodule]
-fn mandelbrot(_py: Python, module: &PyModule) -> PyResult<()> {
-    module.add_function(wrap_pyfunction!(render_frame, module)?)?;
+fn mandelbrot(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(render_frame, m)?)?;
     Ok(())
 }
