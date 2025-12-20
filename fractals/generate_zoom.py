@@ -30,7 +30,11 @@ def generate_zoom_data(
         
         # Save the file.
         filename = str(i).zfill(len(str(n_frames)))
-        np.save(os.path.join(data_dir, f"{filename}.npy"))
+        np.save(
+            os.path.join(data_dir, f"{filename}.npy"),
+            frame,
+            allow_pickle=False,
+        )
 
 
 if __name__ == "__main__":
