@@ -42,7 +42,7 @@ if __name__ == "__main__":
     parser.add_argument("--height", type=int, default=1080)
     parser.add_argument("--scale", type=str, default="4")
     parser.add_argument("--rate", type=float, default=0.99)
-    parser.add_argment("--iters", type=int, default=2000)
+    parser.add_argument("--iters", type=int, default=2000)
     parser.add_argument("--frames", type=int, default=1)
 
     args = parser.parse_args()
