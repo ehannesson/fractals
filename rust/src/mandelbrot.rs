@@ -21,7 +21,7 @@ fn evaluate_single_point(cx: f64, cy: f64, max_iter: u32) -> u32 {
         x = xn;
         y = yn;
     }
-    iter + 1
+    max_iter
 }
 
 
