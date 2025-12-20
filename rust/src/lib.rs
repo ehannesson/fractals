@@ -63,8 +63,8 @@ fn _render_frame(
     let mut buffer = vec![0u32; width*height];
 
     let pixel_step = scale / width as f64;
-    let x_start = x_center - (width as f64 / 2.0);
-    let y_start = y_center - (height as f64 / 2.0);
+    let x_start = x_center - (scale / 2.0);
+    let y_start = y_center - (pixel_step * (height as u32 / 2) as f64);
 
     for y_iter in 0..height {
         let cy = y_start + (pixel_step * y_iter as f64);
