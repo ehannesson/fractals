@@ -1,6 +1,10 @@
 # Data files
 zoom_data
 
+# Jupyter files
+*.ipynb
+.ipynb_checkpoints
+
 # Rust files
 rust/Cargo.lock
 rust/target
