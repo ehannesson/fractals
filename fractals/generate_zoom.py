@@ -35,6 +35,10 @@ def generate_zoom_data(
             frame,
             allow_pickle=False,
         )
+        # Update the scale (i.e., zoom in a bit).
+        #   This is admittedly a bit jenky as of right now...
+        #   Will need to update this when moving to arbitrary precision.
+        start_scale = str(scale_rate * float(start_scale))
 
 
 if __name__ == "__main__":
@@ -44,7 +48,7 @@ if __name__ == "__main__":
     parser.add_argument("data_dir", type=str)
     parser.add_argument("--width", type=int, default=1920)
     parser.add_argument("--height", type=int, default=1080)
-    parser.add_argument("--scale", type=str, default="4")
+    parser.add_argument("--scale", type=str, default="5")
     parser.add_argument("--rate", type=float, default=0.99)
     parser.add_argument("--iters", type=int, default=2000)
     parser.add_argument("--frames", type=int, default=1)
