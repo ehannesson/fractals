@@ -33,7 +33,7 @@ def generate_zoom_data(
         np.save(os.path.join(data_dir, f"{filename}.npy"))
 
 
-def __main__():
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("x_center", type=str)
     parser.add_argument("y_center", type=str)
