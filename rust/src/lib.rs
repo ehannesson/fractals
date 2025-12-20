@@ -70,7 +70,7 @@ fn _render_frame(
         let cy = y_start + (pixel_step * y_iter);
         for x_iter in 0..width {
             let cx = x_start + (pixel_step * x_iter);
-            buffer[(y * width) + x] = evaluate_single_point(cx, cy, max_iter);
+            buffer[(y_iter * width) + x_iter] = evaluate_single_point(cx, cy, max_iter);
         }
     }
     buffer
