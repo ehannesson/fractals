@@ -25,7 +25,7 @@ fn evaluate_single_point(cx: f64, cy: f64, max_iter: u32) -> u32 {
 }
 
 
-fn render_frame(
+fn _render_frame(
     width: usize,
     height: usize,
     center_x: f64,
@@ -77,7 +77,8 @@ fn render_frame(
 }
 
 
-fn render_frame_py(
+#[pyfunction]
+fn render_frame(
     width: usize,
     height: usize,
     center_x: &str,
@@ -90,7 +91,7 @@ fn render_frame_py(
     let scale = scale.parse().unwrap();
 
     Ok(
-        render_frame(
+        _render_frame(
             width,
             height,
             &center_x,
@@ -104,6 +105,6 @@ fn render_frame_py(
 
 #[pymodule]
 fn mandelbrot(_py: Python, module: &PyModule) -> PyResult<()> {
-    module.add_function(wrap_pyfunction!(render_frame_py, module)?)?;
+    module.add_function(wrap_pyfunction!(render_frame, module)?)?;
     Ok(())
 }
