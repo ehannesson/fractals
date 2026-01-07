@@ -1,9 +1,8 @@
 use pyo3::prelude::*;
 
-
-fn evaluate_single_point(cx: f64, cy: f64, max_iter: u32) -> u32 {
+fn evaluate_single_point(cx: f64, cy: f64, max_iter: u32) -> Option<f64> {
     /// Compute Mandelbrot escape iteration count.
-    /// 
+    ///
     /// Returns the number of iterations it takes for the point to escape, or
     /// `max_iter` if the point does not escape.
     let mut x: f64 = 0.0;
@@ -11,19 +10,20 @@ fn evaluate_single_point(cx: f64, cy: f64, max_iter: u32) -> u32 {
 
     for iter in 0..max_iter {
         // Perform one iteration
-        let xn = x*x - y*y + cx;
-        let yn = 2.0*x*y + cy;
+        let xn = x * x - y * y + cx;
+        let yn = 2.0 * x * y + cy;
         // Check if we've escaped
-        if xn*xn + yn*yn > 4.0 {
-            return iter + 1
+        let norm = xn * xn + yn * yn;
+        if norm > 4.0 {
+            // Return a smooth coloring value
+            return (iter + 1) as f64 - (norm.sqrt().ln().ln() / std::f64::consts::LN_2);
         };
         // Update variables if not escaped
         x = xn;
         y = yn;
     }
-    max_iter
+    None
 }
-
 
 fn _render_frame(
     width: usize,
@@ -34,11 +34,11 @@ fn _render_frame(
     max_iter: u32,
 ) -> Vec<u32> {
     /// Render a full frame of Mandelbrot escape iterations.
-    /// 
+    ///
     /// The rendered frame is `width` pixels by `height` pixels. In the complex
     /// plane, the frame is centered on `(x_center, y_center)`, and has a width
     /// of `scale` units.
-    /// 
+    ///
     /// Parameters
     /// ----------
     /// width, height : usize
@@ -50,17 +50,16 @@ fn _render_frame(
     /// max_iter : u32
     ///     The maximum number of iterations to perform before deciding a point
     ///     is part of the Mandelbrot set.
-    /// 
+    ///
     /// Returns
     /// -------
     /// buffer : Vec<u32>
     ///     Frame buffer of escape iterations. Buffer indexing begins at the
-    ///     top left of the frame and makes its way across, then down. That 
+    ///     top left of the frame and makes its way across, then down. That
     ///     is, the first `width` entries correspond to the first row of the
     ///     frame, the entries starting at `2*width` correspond to the second
     ///     row of the frame, and so on.
-    
-    let mut buffer = vec![0u32; width*height];
+    let mut buffer = vec![0u32; width * height];
 
     let pixel_step = scale / width as f64;
     let x_start = x_center - (scale / 2.0);
@@ -70,12 +69,12 @@ fn _render_frame(
         let cy = y_start + (pixel_step * y_iter as f64);
         for x_iter in 0..width {
             let cx = x_start + (pixel_step * x_iter as f64);
-            buffer[(y_iter * width) + x_iter] = evaluate_single_point(cx, cy, max_iter);
+            buffer[(y_iter * width) + x_iter] =
+                evaluate_single_point(cx, cy, max_iter).unwrap_or(f64::NAN);
         }
     }
     buffer
 }
-
 
 #[pyfunction]
 fn render_frame(
@@ -86,18 +85,15 @@ fn render_frame(
     scale: &str,
     max_iter: u32,
 ) -> PyResult<Vec<u32>> {
-    Ok(
-        _render_frame(
-            width,
-            height,
-            x_center.parse().unwrap(),  // Convert all these to floats
-            y_center.parse().unwrap(),
-            scale.parse().unwrap(),
-            max_iter,
-        )
-    )
+    Ok(_render_frame(
+        width,
+        height,
+        x_center.parse().unwrap(), // Convert all these to floats
+        y_center.parse().unwrap(),
+        scale.parse().unwrap(),
+        max_iter,
+    ))
 }
-
 
 #[pymodule]
 fn mandelbrot(m: &Bound<'_, PyModule>) -> PyResult<()> {
