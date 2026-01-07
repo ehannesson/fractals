@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-fn evaluate_single_point(cx: f64, cy: f64, max_iter: u32) -> Option<f64> {
+fn evaluate_single_point(cx: f64, cy: f64, max_iter: u32) -> f64 {
     /// Compute Mandelbrot escape iteration count.
     ///
     /// Returns the number of iterations it takes for the point to escape, or
@@ -22,7 +22,7 @@ fn evaluate_single_point(cx: f64, cy: f64, max_iter: u32) -> Option<f64> {
         x = xn;
         y = yn;
     }
-    None
+    f64::NAN
 }
 
 fn _render_frame(
@@ -32,7 +32,7 @@ fn _render_frame(
     y_center: f64,
     scale: f64,
     max_iter: u32,
-) -> Vec<u32> {
+) -> Vec<f64> {
     /// Render a full frame of Mandelbrot escape iterations.
     ///
     /// The rendered frame is `width` pixels by `height` pixels. In the complex
@@ -59,7 +59,7 @@ fn _render_frame(
     ///     is, the first `width` entries correspond to the first row of the
     ///     frame, the entries starting at `2*width` correspond to the second
     ///     row of the frame, and so on.
-    let mut buffer = vec![0u32; width * height];
+    let mut buffer = vec![0f64; width * height];
 
     let pixel_step = scale / width as f64;
     let x_start = x_center - (scale / 2.0);
@@ -69,8 +69,7 @@ fn _render_frame(
         let cy = y_start + (pixel_step * y_iter as f64);
         for x_iter in 0..width {
             let cx = x_start + (pixel_step * x_iter as f64);
-            buffer[(y_iter * width) + x_iter] =
-                evaluate_single_point(cx, cy, max_iter).unwrap_or(f64::NAN);
+            buffer[(y_iter * width) + x_iter] = evaluate_single_point(cx, cy, max_iter);
         }
     }
     buffer
@@ -84,7 +83,7 @@ fn render_frame(
     y_center: &str,
     scale: &str,
     max_iter: u32,
-) -> PyResult<Vec<u32>> {
+) -> PyResult<Vec<f64>> {
     Ok(_render_frame(
         width,
         height,
